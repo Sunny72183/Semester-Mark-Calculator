@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DREAM MINDS | Semester Mark Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+}
+.app {
+  background: white;
+  width: 90%;
+  max-width: 420px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.header {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: white;
+  text-align: center;
+  padding: 25px 20px;
+}
+.header h1 { margin: 0; font-size: 28px; font-weight: 700; }
+.header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+.container { padding: 30px 25px; text-align: center; }
+h2 { font-size: 20px; color: #333; margin-top: 0; margin-bottom: 25px; }
+label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #4a4a4a;
+  font-size: 14px;
+}
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 8px 0 15px 0;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+input:focus { border-color: #2575fc; outline: none; }
+.button-group {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 25px;
+}
+button {
+  flex-grow: 1;
+  background: #2575fc;
+  color: white;
+  border: none;
+  padding: 12px 0;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 0 5px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s ease-in-out;
+}
+button:hover {
+  background: #134cd8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(37, 117, 252, 0.4);
+}
+.reset { background: #dc3545; }
+.reset:hover { background: #c82333; box-shadow: 0 4px 10px rgba(220, 53, 69, 0.4); }
+.result {
+  margin-top: 25px;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 12px;
+  padding: 15px;
+  min-height: 40px;
+  text-align: left;
+  line-height: 1.5;
+}
+footer { text-align: center; font-size: 11px; color: #999; padding-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>DREAM MINDS</h1>
+    <p>Helping Students Excel 🎓 | UL Rules Applied (60/40)</p>
+  </div>
+  <div class="container">
+    <h2>Semester Mark Calculator</h2>
+    <label for="semesterMark">Enter your semester mark (0–100):</label>
+    <input type="number" id="semesterMark" placeholder="e.g. 58" min="0" max="100">
+
+    <label for="desiredMark">Enter your desired final mark (Optional):</label>
+    <input type="number" id="desiredMark" placeholder="e.g. 75" min="0" max="100">
+
+    <div class="button-group">
+      <button onclick="calculate()">Calculate</button>
+      <button class="reset" onclick="resetForm()">Reset</button>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+  <footer> DREAM MINDS PROJECTS| © 2025 DREAM MINDS</footer>
+</div>
+
+<script>
+function displayError(message) {
+  const resultBox = document.getElementById("result");
+  resultBox.innerHTML = `❌ ${message}`;
+  resultBox.style.background = "#f8d7da";
+  resultBox.style.color = "#721c24";
+  resultBox.style.border = "1px solid #f5c6cb";
+}
+
+function calculate() {
+  const sem = parseFloat(document.getElementById("semesterMark").value);
+  const desired = parseFloat(document.getElementById("desiredMark").value);
+  const resultBox = document.getElementById("result");
+  resultBox.style.background = "#e6f0ff";
+  resultBox.style.color = "#002d66";
+  resultBox.style.border = "none";
+
+  if (isNaN(sem) || sem < 0 || sem > 100 || (desired && (desired < 0 || desired > 100))) {
+    displayError("Marks must be valid numbers between 0 and 100.");
+    return;
+  }
+
+  const totalWeight = sem * 0.6;
+  let rawNeedToPass = (50 - totalWeight) / 0.4;
+  const rawNeedForDesired = desired ? (desired - totalWeight) / 0.4 : null;
+  let showULNotice = false;
+
+  // Minimum exam 40%
+  if (sem >= 40 && rawNeedToPass < 40) {
+    rawNeedToPass = 40;
+    showULNotice = true;
+  }
+
+  let msg = `📘 Semester Mark: ${sem}%<br>`;
+  msg += `🎯 To Pass (50% final): ${rawNeedToPass.toFixed(1)}% in the Exam.<br>`;
+  if (desired) {
+    if (rawNeedForDesired > 100 ){ 
+          msg+= '❌ Sorry, Desired final mark is impossible to reach.<br>'
+    } else if (rawNeedForDesired <= 100) {
+            msg += `💡 To Reach ${desired}% final: ${rawNeedForDesired.toFixed(1)}% in the Exam.<br><br>`;
+    }
+  }
+  // Only show rules that apply
+  if (sem < 40) {
+    msg += `❌ Semester mark below 40%. You do NOT qualify for the exam.<br>`;
+  } else if (showULNotice) {
+    msg += `<span style="color: #6a2331;">📏 UL Rule: Exam mark must be ≥40% to pass, even with high semester marks.</span><br>`;
+  }
+
+
+  if (rawNeedToPass > 100) {
+    msg += `❌ Impossible to pass even with 100% in the exam.<br>`;
+  }
+
+  // Final mark calculation using actual exam mark applied (respecting minimum 40)
+  const finalMark = totalWeight + 0.4 * rawNeedToPass;
+
+  // Only print FAIL if final mark < 45
+  if (sem >= 40) {
+    if (finalMark < 45) {
+      msg += `❌ Final mark ${finalMark.toFixed(1)}% → FAIL<br>`;
+    } else if (finalMark >= 45 && finalMark <= 49) {
+      msg += `⚠️ Final mark ${finalMark.toFixed(1)}% → SUPPLEMENTARY EXAM<br>`;
+    } else {
+      msg += `✅ Final mark ${finalMark.toFixed(1)}% → PASS <br>`;
+    }
+  }
+
+  resultBox.innerHTML = msg;
+}
+
+function resetForm() {
+  document.getElementById("semesterMark").value = "";
+  document.getElementById("desiredMark").value = "";
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("result").style.background = "none";
+  document.getElementById("result").style.border = "none";
+}
+</script>
+</body>
+</html>
